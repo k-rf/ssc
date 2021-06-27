@@ -1,0 +1,18 @@
+{
+    "version": "0.1",
+    "language": "en",
+    "words": [],
+    "ignorePaths": [
+        "**/package-lock.json",
+        "**/node_modules/**",
+        "**/vscode-extension/**",
+        "**/.git/objects/**",
+        ".vscode",
+        ".vscode-insiders",
+        "*.lock",
+        "**/target/**",
+        ".venv",
+        ".pytest_cache",
+        ".devcontainer"
+    ]
+}

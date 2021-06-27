@@ -1,0 +1,8 @@
+[workspace]
+
+members = [
+    "retext",
+    "retext/presentation",
+    "retext/application",
+    "retext/domain",
+]

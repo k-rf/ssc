@@ -1,0 +1,27 @@
+FROM rust:1.52
+
+ARG USER
+
+SHELL [ "/bin/bash", "-c" ]
+RUN useradd -m ${USER} -u 1000 -s /bin/bash
+
+USER root
+RUN \
+    apt-get update && \
+    export DEBIAN_FRONTEND=noninteractive && \
+    apt-get -y install --no-install-recommends sudo tree tig && \
+    sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
+
+USER ${USER}
+WORKDIR /home/${USER}
+RUN \
+    { \
+    echo 'eval "$(starship init bash)"'; \
+    echo 'alias ll="ls -l"'; \
+    echo 'alias la="ls -a"'; \
+    echo 'alias lla="ls -l -a"'; \
+    } >> /home/${USER}/.bashrc
+
+# [Optional] Uncomment this section to install additional packages.
+# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+#     && apt-get -y install --no-install-recommends <your-package-list-here>

@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+    tcam:
+        build:
+            context: .
+            args:
+                - USER=tcam
+            dockerfile: Dockerfile.dev
+        container_name: tcam
+        tty: true
+        user: tcam
+        volumes:
+            - $HOME/.ssh:/home/tcam/.ssh
+            - ../..:/workspace:cached

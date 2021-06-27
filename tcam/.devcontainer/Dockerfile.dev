@@ -1,0 +1,27 @@
+FROM python:latest
+
+ARG USER
+
+SHELL [ "/bin/bash", "-c" ]
+RUN useradd -m ${USER} -u 1000 -s /bin/bash
+
+USER root
+RUN \
+    apt-get update && \
+    export DEBIAN_FRONTEND=noninteractive && \
+    apt-get -y install --no-install-recommends sudo tree tig && \
+    sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
+
+USER ${USER}
+WORKDIR /home/${USER}
+
+ENV PATH $PATH:/home/${USER}/.local/bin
+RUN pip install --upgrade pip --user \
+    && pip install --upgrade setuptools --user
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+
+ENV PATH $PATH:/home/${USER}/.poetry/bin
+RUN poetry config virtualenvs.in-project true
+
+USER root
+RUN poetry completions bash | tee /etc/bash_completion.d/poetry.bash-completion
