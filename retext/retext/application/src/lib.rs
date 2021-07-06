@@ -1,6 +1,12 @@
 use domain::convert_service;
-use domain::emoji::emoji_alphabet::Color;
+use domain::emoji::emoji_alphabet::Color as EmojiColor;
 use domain::raw::raw_text::RawText;
+
+#[derive(Debug)]
+pub enum Color {
+    White,
+    Yellow,
+}
 
 #[derive(Debug)]
 pub struct InputData {
@@ -15,7 +21,10 @@ pub struct OutputData {
 
 pub fn raw2emoji(input: InputData) -> OutputData {
     let raw_text = RawText::from(input.raw_text.as_str());
-    let color = input.color;
+    let color = match input.color {
+        Color::White => EmojiColor::White,
+        Color::Yellow => EmojiColor::Yellow,
+    };
 
     let result = convert_service::convert(raw_text, color);
 
