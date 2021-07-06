@@ -1,23 +1,38 @@
 const DECORATION_WHITE: &str = "alphabet-white-";
 const DECORATION_YELLOW: &str = "alphabet-yellow-";
 
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+pub enum Color {
+    White,
+    Yellow,
+}
+
 #[derive(Debug, PartialEq, PartialOrd)]
 pub struct EmojiAlphabet {
     value: char,
+    color: Color,
 }
 
 impl EmojiAlphabet {
-    pub fn new(value: char) -> Self {
+    pub fn new(value: char, color: Color) -> Self {
         EmojiAlphabet {
             value: value.to_ascii_lowercase(),
+            color,
         }
     }
 
-    pub fn get_white(&self) -> String {
+    pub fn get(&self) -> String {
+        match self.color {
+            Color::White => self.get_white(),
+            Color::Yellow => self.get_yellow(),
+        }
+    }
+
+    fn get_white(&self) -> String {
         format!(":{}{}:", DECORATION_WHITE, Self::to_string(&self.value))
     }
 
-    pub fn get_yellow(&self) -> String {
+    fn get_yellow(&self) -> String {
         format!(":{}{}:", DECORATION_YELLOW, Self::to_string(&self.value))
     }
 
@@ -45,16 +60,23 @@ mod tests {
 
     #[test]
     fn test_equal() {
-        let a = EmojiAlphabet::new('a');
-        let b = EmojiAlphabet::new('A');
-
+        let a = EmojiAlphabet::new('a', Color::White);
+        let b = EmojiAlphabet::new('A', Color::White);
         assert_eq!(a, b);
     }
 
     #[test]
-    fn test_not_equal() {
-        let a = EmojiAlphabet::new('a');
-        let b = EmojiAlphabet::new('B');
+    fn test_not_equal_value() {
+        let a = EmojiAlphabet::new('a', Color::White);
+        let b = EmojiAlphabet::new('B', Color::White);
+
+        assert_ne!(a, b);
+    }
+
+    #[test]
+    fn test_not_equal_color() {
+        let a = EmojiAlphabet::new('a', Color::White);
+        let b = EmojiAlphabet::new('a', Color::Yellow);
 
         assert_ne!(a, b);
     }
@@ -70,5 +92,17 @@ mod tests {
     #[test]
     fn test_non_symbol() {
         assert_eq!(EmojiAlphabet::to_string(&'a'), "a");
+    }
+
+    #[test]
+    fn test_get_white() {
+        let actual = EmojiAlphabet::new('a', Color::White);
+        assert_eq!(actual.get(), ":alphabet-white-a:");
+    }
+
+    #[test]
+    fn test_get_yellow() {
+        let actual = EmojiAlphabet::new('a', Color::Yellow);
+        assert_eq!(actual.get(), ":alphabet-yellow-a:");
     }
 }

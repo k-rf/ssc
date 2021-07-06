@@ -1,12 +1,15 @@
-use crate::emoji::{emoji_alphabet::EmojiAlphabet, emoji_text::EmojiText};
+use crate::emoji::emoji_alphabet::Color;
+use crate::emoji::emoji_text::EmojiText;
 use crate::raw::raw_text::RawText;
 
-pub fn convert(src: RawText) -> EmojiText {
-    EmojiText::new(
+pub fn convert(src: RawText, color: Color) -> EmojiText {
+    EmojiText::from(
         src.get()
             .into_iter()
-            .map(|v| EmojiAlphabet::new(v.get()))
-            .collect(),
+            .map(|v| v.get().to_string())
+            .collect::<String>()
+            .as_str(),
+        color,
     )
 }
 
@@ -16,20 +19,19 @@ mod tests {
 
     #[test]
     fn test_convert_to_white() {
-        let result = convert(RawText::from("abc"));
+        let result = convert(RawText::from("abc"), Color::White);
+
         for (emoji, expected) in result.get().iter().zip("abc".chars()) {
-            assert_eq!(emoji.get_white(), format!(":alphabet-white-{}:", expected))
+            assert_eq!(emoji.get(), format!(":alphabet-white-{}:", expected))
         }
     }
 
     #[test]
     fn test_convert_to_yellow() {
-        let result = convert(RawText::from("abc"));
+        let result = convert(RawText::from("abc"), Color::Yellow);
+
         for (emoji, expected) in result.get().iter().zip("abc".chars()) {
-            assert_eq!(
-                emoji.get_yellow(),
-                format!(":alphabet-yellow-{}:", expected)
-            )
+            assert_eq!(emoji.get(), format!(":alphabet-yellow-{}:", expected))
         }
     }
 }
