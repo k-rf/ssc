@@ -1,7 +1,10 @@
 {
     "version": "0.1",
     "language": "en",
-    "words": [],
+    "words": [
+        "actix",
+        "retext"
+    ],
     "ignorePaths": [
         "**/package-lock.json",
         "**/node_modules/**",
