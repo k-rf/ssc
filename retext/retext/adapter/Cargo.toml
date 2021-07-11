@@ -1,5 +1,5 @@
 [package]
-name = "presentation"
+name = "adapter"
 version = "0.1.0"
 authors = ["Kawano Kenichi <bppk28@gmail.com>"]
 edition = "2018"
@@ -9,3 +9,5 @@ edition = "2018"
 [dependencies]
 
 application = { path = "../application" }
+actix-web = "3.3.2"
+serde = "1"

@@ -262,6 +262,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "adapter"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "application",
+ "serde",
+]
+
+[[package]]
 name = "addr2line"
 version = "0.15.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1163,13 +1172,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ac74c624d6b2d21f425f752262f42188365d7b8ff1aff74c82e45136510a4857"
 
 [[package]]
-name = "presentation"
-version = "0.1.0"
-dependencies = [
- "application",
-]
-
-[[package]]
 name = "proc-macro-hack"
 version = "0.5.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1286,7 +1288,7 @@ dependencies = [
 name = "retext"
 version = "0.1.0"
 dependencies = [
- "presentation",
+ "adapter",
 ]
 
 [[package]]

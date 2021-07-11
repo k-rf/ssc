@@ -1,35 +1,34 @@
 use domain::convert_service;
-use domain::emoji::emoji_alphabet::Color as EmojiColor;
+pub use domain::emoji::emoji_alphabet::Color;
 use domain::raw::raw_text::RawText;
 
 #[derive(Debug)]
-pub enum Color {
-    White,
-    Yellow,
-}
-
-#[derive(Debug)]
-pub struct InputData {
-    pub raw_text: String,
-    pub color: Color,
+pub struct InputData<'a> {
+    pub highlight: String,
+    pub color: Option<&'a str>,
+    pub message: Option<&'a str>,
 }
 
 #[derive(Debug, PartialEq)]
 pub struct OutputData {
-    pub emoji_text: String,
+    pub highlighted_message: String,
 }
 
-pub fn raw2emoji(input: InputData) -> OutputData {
-    let raw_text = RawText::from(input.raw_text.as_str());
+pub fn highlight_message(input: InputData) -> OutputData {
+    let highlight = RawText::from(input.highlight.as_str());
     let color = match input.color {
-        Color::White => EmojiColor::White,
-        Color::Yellow => EmojiColor::Yellow,
+        Some(color) => match color.to_lowercase().as_str() {
+            "yellow" => Color::Yellow,
+            _ => Color::White,
+        },
+        None => Color::White,
     };
+    let message = input.message.unwrap_or_default();
 
-    let result = convert_service::convert(raw_text, color);
+    let result = convert_service::convert(highlight, color);
 
     OutputData {
-        emoji_text: result.get().iter().map(|e| e.get()).collect(),
+        highlighted_message: result.get().iter().map(|e| e.get()).collect::<String>() + &message,
     }
 }
 
@@ -39,12 +38,13 @@ mod tests {
 
     #[test]
     fn test_convert_to_white() {
-        let actual = raw2emoji(InputData {
-            raw_text: String::from("abc"),
-            color: Color::White,
+        let actual = highlight_message(InputData {
+            highlight: String::from("abc"),
+            color: Some("white"),
+            message: None,
         });
         let expected = OutputData {
-            emoji_text: String::from(
+            highlighted_message: String::from(
                 [
                     ":alphabet-white-a:",
                     ":alphabet-white-b:",
@@ -59,12 +59,13 @@ mod tests {
 
     #[test]
     fn test_convert_to_yellow() {
-        let actual = raw2emoji(InputData {
-            raw_text: String::from("xyz"),
-            color: Color::Yellow,
+        let actual = highlight_message(InputData {
+            highlight: String::from("xyz"),
+            color: Some("YeLLow"),
+            message: None,
         });
         let expected = OutputData {
-            emoji_text: String::from(
+            highlighted_message: String::from(
                 [
                     ":alphabet-yellow-x:",
                     ":alphabet-yellow-y:",
@@ -72,6 +73,26 @@ mod tests {
                 ]
                 .join(""),
             ),
+        };
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn test_convert_with_message() {
+        let actual = highlight_message(InputData {
+            highlight: String::from("xyz"),
+            color: None,
+            message: Some("test message"),
+        });
+        let expected = OutputData {
+            highlighted_message: String::from(
+                [
+                    ":alphabet-white-x:",
+                    ":alphabet-white-y:",
+                    ":alphabet-white-z:",
+                ]
+                .join(""),
+            ) + "test message",
         };
         assert_eq!(actual, expected);
     }
