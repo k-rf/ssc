@@ -1,0 +1,34 @@
+version: "3.8"
+
+networks:
+    default:
+
+services:
+    retext:
+        build:
+            context: ./retext
+        environment:
+            - RUST_LOG=${RUST_LOG}
+        container_name: ssc-retext
+        ports:
+            - 8080:8080
+        tty: true
+        networks:
+            - default
+
+    # tcam:
+    #     image: python
+
+    ngrok:
+        image: wernight/ngrok:latest
+        container_name: ssc-ngrok
+        ports:
+            - 4040:4040
+        environment:
+            NGROK_PROTOCOL: http
+            NGROK_PORT: retext:8080
+            NGROK_AUTH: ${NGROK_AUTH}
+        depends_on:
+            - retext
+        networks:
+            - default
