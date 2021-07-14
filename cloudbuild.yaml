@@ -1,0 +1,50 @@
+steps:
+  - name: rust:1.52
+    dir: retext
+    args:
+      - cargo
+      - test
+      - "--all"
+    id: Test ($_SERVICE_NAME_1)
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - "--no-cache"
+      - "-t"
+      - "$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME_1:$COMMIT_SHA"
+      - retext
+      - "-f"
+      - retext/Dockerfile
+    id: Build ($_SERVICE_NAME_1)
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - "$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME_1:$COMMIT_SHA"
+    id: Push ($_SERVICE_NAME_1)
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    args:
+      - run
+      - deploy
+      - $_SERVICE_NAME_1
+      - "--platform=managed"
+      - "--image=$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME_1:$COMMIT_SHA"
+      - >-
+        --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID
+      - "--region=$_DEPLOY_REGION"
+      - "--quiet"
+    id: Deploy ($_SERVICE_NAME_1)
+    entrypoint: gcloud
+timeout: 7200s
+images:
+  - "$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME_1:$COMMIT_SHA"
+options:
+  substitutionOption: ALLOW_LOOSE
+substitutions:
+  _DEPLOY_REGION: asia-northeast1
+  _GCR_HOSTNAME: asia.gcr.io
+  _PLATFORM: managed
+  _SERVICE_NAME_1: ssc-retext
+tags:
+  - gcp-cloud-build-deploy-cloud-run
+  - gcp-cloud-build-deploy-cloud-run-managed
+  - ssc
