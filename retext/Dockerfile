@@ -1,10 +1,13 @@
-FROM rust:1.52
+FROM rust:1.52 as build
 
 COPY ./ ./
 RUN cargo build --release
 
-ENTRYPOINT [ "cargo" ]
-CMD ["run", "--release"]
+FROM scratch
+COPY --from=build ./target/release/server ./bin/server
+ENV RUST_LOG=info
+
+ENTRYPOINT [ "/bin/server" ]
 
 # [Optional] Uncomment this section to install additional packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \

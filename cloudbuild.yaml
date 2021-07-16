@@ -1,12 +1,24 @@
 steps:
-  - name: rust:1.52
+  - id: Build Test Image (ssc-retext)
     dir: retext
+    name: gcr.io/cloud-builders/docker
     args:
+      - image
+      - build
+      - --target build
+      - --tag ssc-retext:test .
+  - id: Test (ssc-retext)
+    dir: retext
+    name: gcr.io/cloud-builders/docker
+    args:
+      - container
+      - run
+      - ssc-retext:test
       - cargo
       - test
-      - "--all"
-    id: Test (ssc-retext)
-  - name: gcr.io/cloud-builders/docker
+      - --all
+  - id: Build (ssc-retext)
+    name: gcr.io/cloud-builders/docker
     args:
       - build
       - "--no-cache"
@@ -15,13 +27,14 @@ steps:
       - retext
       - "-f"
       - retext/Dockerfile
-    id: Build (ssc-retext)
-  - name: gcr.io/cloud-builders/docker
+  - id: Push (ssc-retext)
+    name: gcr.io/cloud-builders/docker
     args:
       - push
       - "$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME_1:$COMMIT_SHA"
-    id: Push (ssc-retext)
-  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+  - id: Deploy (ssc-retext)
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: gcloud
     args:
       - run
       - deploy
@@ -32,8 +45,8 @@ steps:
         --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID
       - "--region=$_DEPLOY_REGION"
       - "--quiet"
-    id: Deploy ($_SERVICE_NAME_1)
-    entrypoint: gcloud
+    env:
+      - RUST_LOG=info
 timeout: 7200s
 images:
   - "$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME_1:$COMMIT_SHA"

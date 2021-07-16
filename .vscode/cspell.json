@@ -3,6 +3,7 @@
     "language": "en",
     "words": [
         "cloudsdktool",
+        "gcloud",
         "retext"
     ],
     "ignorePaths": [
