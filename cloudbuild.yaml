@@ -2,27 +2,34 @@ steps:
   - id: Build Test Image (ssc-retext)
     dir: retext
     name: gcr.io/cloud-builders/docker
+    entrypoint: bash
     args:
+      - -c
       - >-
-       build --no-cache
-       --target build
-       --tag ssc-retext:test
-       .
+        docker build --no-cache
+        --target build
+        --tag ssc-retext:test
+        .
   - id: Test (ssc-retext)
     dir: retext
     name: gcr.io/cloud-builders/docker
+    entrypoint: bash
     args:
+      - -c
       - >-
-        container run
+        docker run
         ssc-retext:test
         cargo test --all
   - id: Build (ssc-retext)
     name: gcr.io/cloud-builders/docker
     dir: retext
+    entrypoint: bash
     args:
+      - -c
       - >-
-        build --no-cache
+        docker build --no-cache
         --tag $_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME_1:$COMMIT_SHA
+        .
   - id: Push (ssc-retext)
     name: gcr.io/cloud-builders/docker
     args:
