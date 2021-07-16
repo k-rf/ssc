@@ -19,7 +19,9 @@ steps:
       - >-
         docker run
         ssc-retext:test
-        cargo test --all
+        cargo test
+        --all
+        --release
   - id: Build (ssc-retext)
     name: gcr.io/cloud-builders/docker
     dir: retext
