@@ -6,7 +6,7 @@ steps:
     args:
       - -c
       - >-
-        docker build --no-cache
+        docker build
         --target build
         --tag ssc-retext:test
         .
@@ -29,7 +29,7 @@ steps:
     args:
       - -c
       - >-
-        docker build --no-cache
+        docker build
         --tag $_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME_1:$COMMIT_SHA
         .
   - id: Push (ssc-retext)
