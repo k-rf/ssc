@@ -49,6 +49,7 @@ steps:
       - >-
         --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID
       - "--region=$_DEPLOY_REGION"
+      - "--port=8080"
       - "--quiet"
     env:
       - RUST_LOG=info
