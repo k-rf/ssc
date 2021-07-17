@@ -4,6 +4,7 @@
     "words": [
         "cloudsdktool",
         "gcloud",
+        "musl",
         "retext"
     ],
     "ignorePaths": [

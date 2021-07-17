@@ -22,6 +22,7 @@ steps:
         cargo test
         --all
         --release
+        --target x86_64-unknown-linux-musl
   - id: Build (ssc-retext)
     name: gcr.io/cloud-builders/docker
     dir: retext
