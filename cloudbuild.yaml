@@ -52,6 +52,7 @@ steps:
       - "--region=$_DEPLOY_REGION"
       - "--port=8080"
       - "--quiet"
+      - "--allow-unauthenticated"
     env:
       - RUST_LOG=info
 timeout: 7200s
