@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 
 #[derive(Debug, PartialEq)]
-pub struct ParsedRequestText {
+pub struct ParsedText {
     pub highlight: String,
     pub color: Option<String>,
     pub message: Option<String>,
@@ -42,7 +42,7 @@ fn separate(text: String) -> VecDeque<String> {
     separated
 }
 
-pub fn text_parse(text: String) -> ParsedRequestText {
+pub fn text_parse(text: String) -> ParsedText {
     let mut separated = separate(text);
 
     let highlight = separated.pop_front().expect("Highlight text is necessary");
@@ -53,7 +53,7 @@ pub fn text_parse(text: String) -> ParsedRequestText {
 
     let sep1 = if let Some(sep) = sep1 {
         if sep.contains('\n') {
-            return ParsedRequestText {
+            return ParsedText {
                 highlight,
                 color: None,
                 message: Some(format!(
@@ -68,7 +68,12 @@ pub fn text_parse(text: String) -> ParsedRequestText {
             Some(sep)
         }
     } else {
-        sep1
+        return ParsedText {
+            highlight,
+            color: None,
+            message: None,
+            separator: None,
+        };
     };
 
     let (color, word) = if let Some(color_or_word) = color_or_word {
@@ -77,7 +82,7 @@ pub fn text_parse(text: String) -> ParsedRequestText {
             _ => (None, Some(color_or_word)),
         }
     } else {
-        return ParsedRequestText {
+        return ParsedText {
             highlight,
             color: None,
             message: None,
@@ -86,7 +91,7 @@ pub fn text_parse(text: String) -> ParsedRequestText {
     };
 
     if let Some(word) = word {
-        return ParsedRequestText {
+        return ParsedText {
             highlight,
             color: None,
             message: Some(format!("{}{}{}", word, sep2.unwrap_or_default(), message)),
@@ -95,7 +100,7 @@ pub fn text_parse(text: String) -> ParsedRequestText {
     }
 
     if message.is_empty() {
-        return ParsedRequestText {
+        return ParsedText {
             highlight,
             color,
             message: None,
@@ -103,7 +108,7 @@ pub fn text_parse(text: String) -> ParsedRequestText {
         };
     }
 
-    ParsedRequestText {
+    ParsedText {
         highlight,
         color,
         message: Some(message),
@@ -152,7 +157,7 @@ mod tests {
             let actual = text_parse(String::from("abc"));
             assert_eq!(
                 actual,
-                ParsedRequestText {
+                ParsedText {
                     highlight: String::from("abc"),
                     color: None,
                     message: None,
@@ -166,7 +171,7 @@ mod tests {
             let actual = text_parse(String::from("abc white"));
             assert_eq!(
                 actual,
-                ParsedRequestText {
+                ParsedText {
                     highlight: String::from("abc"),
                     color: Some(String::from("white")),
                     message: None,
@@ -180,7 +185,7 @@ mod tests {
             let actual = text_parse(String::from("xyz yellow"));
             assert_eq!(
                 actual,
-                ParsedRequestText {
+                ParsedText {
                     highlight: String::from("xyz"),
                     color: Some(String::from("yellow")),
                     message: None,
@@ -194,7 +199,7 @@ mod tests {
             let actual = text_parse(String::from("abc white message"));
             assert_eq!(
                 actual,
-                ParsedRequestText {
+                ParsedText {
                     highlight: String::from("abc"),
                     color: Some(String::from("white")),
                     message: Some(String::from("message")),
@@ -208,7 +213,7 @@ mod tests {
             let actual = text_parse(String::from("xyz yellow message"));
             assert_eq!(
                 actual,
-                ParsedRequestText {
+                ParsedText {
                     highlight: String::from("xyz"),
                     color: Some(String::from("yellow")),
                     message: Some(String::from("message")),
@@ -222,7 +227,7 @@ mod tests {
             let actual = text_parse(String::from("xyz white some messages."));
             assert_eq!(
                 actual,
-                ParsedRequestText {
+                ParsedText {
                     highlight: String::from("xyz"),
                     color: Some(String::from("white")),
                     message: Some(String::from("some messages.")),
@@ -236,7 +241,7 @@ mod tests {
             let actual = text_parse(String::from("abc with some messages."));
             assert_eq!(
                 actual,
-                ParsedRequestText {
+                ParsedText {
                     highlight: String::from("abc"),
                     color: None,
                     message: Some(String::from("with some messages.")),
@@ -250,7 +255,7 @@ mod tests {
             let actual = text_parse(String::from("abc yellow\nmessage"));
             assert_eq!(
                 actual,
-                ParsedRequestText {
+                ParsedText {
                     highlight: String::from("abc"),
                     color: Some(String::from("yellow")),
                     message: Some(String::from("message")),
@@ -264,7 +269,7 @@ mod tests {
             let actual = text_parse(String::from("abc\nyellow yellow message\nsecond message"));
             assert_eq!(
                 actual,
-                ParsedRequestText {
+                ParsedText {
                     highlight: String::from("abc"),
                     color: None,
                     message: Some(String::from("yellow yellow message\nsecond message")),
@@ -280,7 +285,7 @@ mod tests {
             ));
             assert_eq!(
                 actual,
-                ParsedRequestText {
+                ParsedText {
                     highlight: String::from("abc"),
                     color: None,
                     message: Some(String::from("yellow yellow message\nsecond message")),
