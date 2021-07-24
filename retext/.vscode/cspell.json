@@ -3,6 +3,7 @@
     "language": "en",
     "words": [
         "actix",
+        "Deque",
         "retext"
     ],
     "ignorePaths": [
