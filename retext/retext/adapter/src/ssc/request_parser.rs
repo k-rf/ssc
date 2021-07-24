@@ -46,6 +46,11 @@ pub fn text_parse(text: String) -> ParsedText {
     let mut separated = separate(text);
 
     let highlight = separated.pop_front().expect("Highlight text is necessary");
+
+    if highlight.contains(' ') || highlight.contains('\n') || highlight.is_empty() {
+        panic!("Highlight text is necessary");
+    }
+
     let sep1 = separated.pop_front();
     let color_or_word = separated.pop_front();
     let sep2 = separated.pop_front();
@@ -151,6 +156,30 @@ mod tests {
     #[cfg(test)]
     mod test_parse_highlight {
         use super::*;
+
+        #[test]
+        #[should_panic(expected = "Highlight text is necessary")]
+        fn test_parse_new() {
+            text_parse(String::new());
+        }
+
+        #[test]
+        #[should_panic(expected = "Highlight text is necessary")]
+        fn test_parse_empty() {
+            text_parse(String::from(""));
+        }
+
+        #[test]
+        #[should_panic(expected = "Highlight text is necessary")]
+        fn test_parse_separator_linefeed() {
+            text_parse(String::from("\n"));
+        }
+
+        #[test]
+        #[should_panic(expected = "Highlight text is necessary")]
+        fn test_parse_separator_space() {
+            text_parse(String::from(" "));
+        }
 
         #[test]
         fn test_parse_highlight_only() {
